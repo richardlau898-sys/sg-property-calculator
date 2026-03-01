@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>新加坡房产投资计算器</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <header>
+    <div class="container">
+      <h1>新加坡房产投资计算器</h1>
+      <p class="subtitle">Singapore Property Investment Calculator</p>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- 输入区域 -->
+    <div class="input-grid">
+      <!-- 买家资料 -->
+      <section class="card">
+        <h2>买家资料 <span class="en">Buyer Profile</span></h2>
+
+        <div class="form-group">
+          <label>身份类型 <span class="en">Citizenship</span></label>
+          <div class="radio-group" id="buyer-type">
+            <label class="radio-btn">
+              <input type="radio" name="buyerType" value="SC">
+              <span>新加坡公民</span>
+            </label>
+            <label class="radio-btn">
+              <input type="radio" name="buyerType" value="PR" checked>
+              <span>永久居民 (PR)</span>
+            </label>
+            <label class="radio-btn">
+              <input type="radio" name="buyerType" value="FOREIGNER">
+              <span>外国人</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>第几套房产 <span class="en">Property Number</span></label>
+          <div class="radio-group" id="property-number">
+            <label class="radio-btn">
+              <input type="radio" name="propNum" value="1" checked>
+              <span>第一套</span>
+            </label>
+            <label class="radio-btn">
+              <input type="radio" name="propNum" value="2">
+              <span>第二套</span>
+            </label>
+            <label class="radio-btn">
+              <input type="radio" name="propNum" value="3">
+              <span>第三套+</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="buyer-age">买家年龄 <span class="en">Age</span></label>
+          <input type="number" id="buyer-age" value="35" min="21" max="99" class="input-field">
+          <span class="hint" id="max-tenure-hint">最长贷款年限: 30年</span>
+        </div>
+
+        <!-- 实时提示 -->
+        <div class="info-badges">
+          <div class="badge" id="absd-badge">ABSD: 5%</div>
+          <div class="badge" id="ltv-badge">LTV上限: 75%</div>
+        </div>
+      </section>
+
+      <!-- 房产信息 -->
+      <section class="card">
+        <h2>房产信息 <span class="en">Property Details</span></h2>
+
+        <div class="form-group">
+          <label for="property-price">房产价格 <span class="en">Price (SGD)</span></label>
+          <div class="input-with-prefix">
+            <span class="prefix">SGD</span>
+            <input type="number" id="property-price" value="6000000" min="1" step="10000" class="input-field">
+          </div>
+        </div>
+
+        <div class="derived-info">
+          <div class="info-row">
+            <span>最高可贷金额</span>
+            <span id="max-loan-display" class="value">SGD 4,500,000</span>
+          </div>
+          <div class="info-row">
+            <span>最低首付</span>
+            <span id="min-down-display" class="value">SGD 1,500,000</span>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- 贷款方案 -->
+    <section class="card">
+      <h2>贷款方案对比 <span class="en">Loan Packages</span></h2>
+      <p class="section-hint">最多可添加5家银行进行对比</p>
+
+      <div id="bank-rows">
+        <!-- 银行行会被JS动态插入 -->
+      </div>
+
+      <button type="button" id="btn-add-bank" class="btn btn-outline">+ 添加银行方案</button>
+    </section>
+
+    <!-- 操作按钮 -->
+    <div class="action-bar">
+      <button type="button" id="btn-calculate" class="btn btn-primary">开始计算</button>
+      <button type="button" id="btn-reset" class="btn btn-ghost">重置</button>
+    </div>
+
+    <!-- 计算结果 -->
+    <section id="results" class="hidden">
+      <!-- 前期费用 -->
+      <div class="card result-card">
+        <h2>前期费用明细 <span class="en">Upfront Costs</span></h2>
+        <div id="upfront-costs"></div>
+      </div>
+
+      <!-- 银行对比 -->
+      <div class="card result-card">
+        <h2>贷款方案对比 <span class="en">Loan Comparison</span></h2>
+        <div id="loan-comparison" class="table-scroll"></div>
+      </div>
+
+      <!-- TDSR提示 -->
+      <div class="card result-card">
+        <h2>收入要求提示 <span class="en">TDSR Reference</span></h2>
+        <div id="tdsr-info"></div>
+      </div>
+
+      <!-- 还款计划 -->
+      <div class="card result-card">
+        <h2>逐年还款计划 <span class="en">Amortization Schedule</span></h2>
+        <div id="amortization-schedule"></div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container">
+      <p class="disclaimer">
+        免责声明: 本计算器仅供参考，实际费用以相关政府机构和银行的最终核算为准。
+        税率数据更新至2025-2026年，如有变动请以 IRAS 官网为准。
+      </p>
+    </div>
+  </footer>
+
+  <script src="js/constants.js"></script>
+  <script src="js/calculator.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

@@ -77,20 +77,28 @@ function bindAutoSave() {
   document.getElementById('bank-rows').addEventListener('input', debouncedSave);
 }
 
+/** 加载默认银行方案 */
+function loadDefaultBankPackages() {
+  const defaults = SG_PROPERTY.DEFAULT_BANK_PACKAGES;
+  defaults.forEach((bank, i) => {
+    addBankRow();
+    const rows = document.querySelectorAll('.bank-row');
+    const row = rows[rows.length - 1];
+    if (!row) return;
+    row.querySelector('.bank-name').value = bank.bankName;
+    row.querySelector('.bank-rate').value = bank.rate;
+    row.querySelector('.bank-loan').value = bank.loanAmount;
+    row.querySelector('.bank-tenure').value = bank.tenure;
+  });
+}
+
 document.addEventListener('DOMContentLoaded', () => {
-  // 先添加一行，再尝试恢复上次数据
-  addBankRow();
+  // 尝试恢复上次数据
   const restored = restoreFromStorage();
 
-  // 如果没有恢复数据，保留默认值；如果恢复了，去掉第一行默认行（restoreFromStorage 已经创建了行）
-  if (restored) {
-    // 删掉最初 addBankRow() 创建的空行（它是第一行）
-    const firstRow = document.querySelector('.bank-row');
-    if (firstRow) {
-      firstRow.remove();
-      bankRowCount--;
-      updateBankRowButtons();
-    }
+  // 如果没有恢复数据，加载默认银行方案
+  if (!restored) {
+    loadDefaultBankPackages();
   }
 
   // 绑定买家资料变更事件

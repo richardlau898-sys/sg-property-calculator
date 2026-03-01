@@ -44,4 +44,12 @@ const SG_PROPERTY = Object.freeze({
     PR: '永久居民 (PR)',
     FOREIGNER: '外国人',
   }),
+
+  // 默认银行方案 (2026年1月数据, 1M SORA ≈ 1.15%)
+  DEFAULT_BANK_PACKAGES: Object.freeze([
+    { bankName: 'SCB 浮动 SORA+0.20%', rate: 1.35, loanAmount: 4500000, tenure: 30 },
+    { bankName: 'SCB 固定 1.35%',       rate: 1.35, loanAmount: 4500000, tenure: 30 },
+    { bankName: 'UOB 浮动 SORA+0%',    rate: 1.15, loanAmount: 4500000, tenure: 30 },
+    { bankName: 'DBS 浮动 SORA+0.28%', rate: 1.43, loanAmount: 4500000, tenure: 30 },
+  ]),
 });

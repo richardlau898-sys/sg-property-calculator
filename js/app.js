@@ -2,9 +2,96 @@
  * 应用主模块 - 初始化、事件绑定、流程编排
  */
 
+const STORAGE_KEY = 'sg-property-calc-data';
+
+/** 收集当前所有输入值 */
+function collectFormData() {
+  return {
+    buyerType: document.querySelector('input[name="buyerType"]:checked')?.value || 'PR',
+    propNum: document.querySelector('input[name="propNum"]:checked')?.value || '1',
+    age: document.getElementById('buyer-age').value,
+    price: document.getElementById('property-price').value,
+    banks: getBankPackages(),
+  };
+}
+
+/** 保存到 localStorage */
+function saveToStorage() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(collectFormData()));
+  } catch (e) { /* 忽略存储满等异常 */ }
+}
+
+/** 从 localStorage 恢复输入 */
+function restoreFromStorage() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return false;
+
+    const data = JSON.parse(raw);
+
+    // 恢复买家资料
+    const buyerRadio = document.querySelector(`input[name="buyerType"][value="${data.buyerType}"]`);
+    if (buyerRadio) buyerRadio.checked = true;
+
+    const propRadio = document.querySelector(`input[name="propNum"][value="${data.propNum}"]`);
+    if (propRadio) propRadio.checked = true;
+
+    if (data.age) document.getElementById('buyer-age').value = data.age;
+    if (data.price) document.getElementById('property-price').value = data.price;
+
+    // 恢复银行方案
+    if (data.banks && data.banks.length > 0) {
+      data.banks.forEach((bank, i) => {
+        if (i > 0) addBankRow();
+        const rows = document.querySelectorAll('.bank-row');
+        const row = rows[rows.length - 1];
+        if (!row) return;
+        row.querySelector('.bank-name').value = bank.bankName || '';
+        row.querySelector('.bank-rate').value = bank.rate || '';
+        row.querySelector('.bank-loan').value = bank.loanAmount || '';
+        row.querySelector('.bank-tenure').value = bank.tenure || '';
+      });
+      return true;
+    }
+  } catch (e) { /* 数据损坏则忽略 */ }
+  return false;
+}
+
+/** 给所有输入绑定自动保存 */
+function bindAutoSave() {
+  // 输入变化时自动保存（用防抖避免频繁写入）
+  let saveTimer;
+  const debouncedSave = () => {
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(saveToStorage, 500);
+  };
+
+  document.querySelectorAll('input[name="buyerType"], input[name="propNum"]').forEach(el => {
+    el.addEventListener('change', debouncedSave);
+  });
+  document.getElementById('buyer-age').addEventListener('input', debouncedSave);
+  document.getElementById('property-price').addEventListener('input', debouncedSave);
+
+  // 银行行输入变化也保存（用事件委托）
+  document.getElementById('bank-rows').addEventListener('input', debouncedSave);
+}
+
 document.addEventListener('DOMContentLoaded', () => {
-  // 初始化一行银行方案
+  // 先添加一行，再尝试恢复上次数据
   addBankRow();
+  const restored = restoreFromStorage();
+
+  // 如果没有恢复数据，保留默认值；如果恢复了，去掉第一行默认行（restoreFromStorage 已经创建了行）
+  if (restored) {
+    // 删掉最初 addBankRow() 创建的空行（它是第一行）
+    const firstRow = document.querySelector('.bank-row');
+    if (firstRow) {
+      firstRow.remove();
+      bankRowCount--;
+      updateBankRowButtons();
+    }
+  }
 
   // 绑定买家资料变更事件
   document.querySelectorAll('input[name="buyerType"]').forEach(el => {
@@ -26,6 +113,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // 重置按钮
   document.getElementById('btn-reset').addEventListener('click', handleReset);
+
+  // 绑定自动保存
+  bindAutoSave();
 
   // 初始化提示信息
   updateInfoBadges();
@@ -98,6 +188,9 @@ function handleCalculate() {
   renderAmortizationSchedule(comparison);
   showResults();
 
+  // 保存当前输入
+  saveToStorage();
+
   // 滚动到结果
   setTimeout(() => {
     document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
@@ -117,6 +210,9 @@ function handleReset() {
   // 清除错误和结果
   clearErrors();
   hideResults();
+
+  // 清除保存的数据
+  localStorage.removeItem(STORAGE_KEY);
 
   // 更新提示
   updateInfoBadges();

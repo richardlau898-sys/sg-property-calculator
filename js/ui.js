@@ -55,6 +55,7 @@ function addBankRow() {
   bankRowCount++;
 
   updateBankRowButtons();
+  if (typeof saveToStorage === 'function') saveToStorage();
 }
 
 function removeBankRow(index) {
@@ -62,6 +63,7 @@ function removeBankRow(index) {
   if (row) row.remove();
   bankRowCount--;
   updateBankRowButtons();
+  if (typeof saveToStorage === 'function') saveToStorage();
 }
 
 function updateBankRowButtons() {

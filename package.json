@@ -1,0 +1,8 @@
+{
+  "name": "sg-property-calculator",
+  "version": "1.0.0",
+  "description": "Singapore Property Investment Calculator",
+  "scripts": {
+    "build": "mkdir -p dist/css dist/js && cp index.html dist/ && cp css/* dist/css/ && cp js/* dist/js/"
+  }
+}
